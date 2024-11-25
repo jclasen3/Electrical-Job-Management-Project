@@ -14,6 +14,3 @@ public class Worker {
         return name;
     }
 }
-
-
-
