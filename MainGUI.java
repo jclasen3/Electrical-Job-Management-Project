@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -25,15 +26,21 @@ public class MainGUI {
         JButton addWorkerButton = new JButton("Add Worker");
         JButton addClientButton = new JButton("Add Client");
         JButton createJobButton = new JButton("Create Job");
+        JButton viewJobsButton = new JButton("View All Jobs");
+        JButton assignJobButton = new JButton("Assign Job");
 
         addWorkerButton.addActionListener(new AddWorkerAction());
         addClientButton.addActionListener(new AddClientAction());
         createJobButton.addActionListener(new CreateJobAction());
+        viewJobsButton.addActionListener(new ViewJobsAction());
+        assignJobButton.addActionListener(new AssignJobAction());
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(addWorkerButton);
         buttonPanel.add(addClientButton);
         buttonPanel.add(createJobButton);
+        buttonPanel.add(viewJobsButton);
+        buttonPanel.add(assignJobButton);
 
         frame.add(scrollPane, BorderLayout.CENTER);
         frame.add(buttonPanel, BorderLayout.SOUTH);
@@ -116,11 +123,52 @@ public class MainGUI {
         }
     }
 
+    private class ViewJobsAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            StringBuilder sb = new StringBuilder("Available Jobs:\n");
+            for (Job job : managementSystem.getJobs()) {
+                sb.append(job).append("\n");
+            }
+            JOptionPane.showMessageDialog(frame, sb.toString(), "Jobs", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private class AssignJobAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String jobName = JOptionPane.showInputDialog(frame, "Enter the name of the job:");
+            String workerName = JOptionPane.showInputDialog(frame, "Enter the name of the worker:");
+
+            Job selectedJob = null;
+            Worker selectedWorker = null;
+
+            for (Job job : managementSystem.getJobs()) {
+                if (job.getName().equalsIgnoreCase(jobName)) {
+                    selectedJob = job;
+                    break;
+                }
+            }
+
+            for (Worker worker : managementSystem.getWorkers()) {
+                if (worker.getName().equalsIgnoreCase(workerName)) {
+                    selectedWorker = worker;
+                    break;
+                }
+            }
+
+            if (selectedJob == null) {
+                JOptionPane.showMessageDialog(frame, "Job not found.");
+            } else if (selectedWorker == null) {
+                JOptionPane.showMessageDialog(frame, "Worker not found.");
+            } else {
+                selectedJob.assignWorker(selectedWorker);
+                updateTextArea();
+            }
+        }
+    }
+
     public static void main(String[] args) {
         new MainGUI();
     }
 }
-
-
-
-
